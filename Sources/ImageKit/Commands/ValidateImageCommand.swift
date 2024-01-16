@@ -67,14 +67,14 @@ public extension ValidateImageCommand {
         let maxFileSize: FileSize?
         let maxMemorySize: FileSize?
 
-		public init(image: ImageProcessor.ImageSource, maxFileSize: FileSize? = nil, maxMemorySize: FileSize? = nil) {
+        public init(image: ImageProcessor.ImageSource, maxFileSize: FileSize? = nil, maxMemorySize: FileSize? = nil) {
             self.image = image
             self.maxFileSize = maxFileSize
             self.maxMemorySize = maxMemorySize
         }
     }
 
-	enum ErrorType {
+    enum ErrorType {
         case readImageError
         case fileSizeTooBig
         case memorySizeTooBig(maxImageDimension: CGSize)
