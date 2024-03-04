@@ -13,10 +13,10 @@ public protocol SynchronousImageProcessing {
 }
 
 public final class ImageProcessor: SynchronousImageProcessing {
-    private static let bytesPerPixel = 4.0
+    static let bytesPerPixel = 4.0
 
     private let image: ImageSource
-    private var source: CGImageSource?
+    private(set) var source: CGImageSource?
 
     public init(image: ImageSource) {
         self.image = image
@@ -93,78 +93,6 @@ public final class ImageProcessor: SynchronousImageProcessing {
             return nil
         }
         return CGImageSourceCreateImageAtIndex(source, 0, nil)
-    }
-
-    public func downsampleImage(to dimension: CGSize) throws -> CGImage? {
-        guard dimension.width > 0, dimension.height > 0 else {
-            let error = NSError(
-                domain: "",
-                code: 1_000,
-                userInfo: [NSLocalizedDescriptionKey: "Width and height must be positive number"]
-            )
-            throw error
-        }
-        guard let source, let initialSize = getImageDimension() else {
-            return nil
-        }
-
-        if dimension.width > initialSize.width || dimension.height > initialSize.height {
-            return getCGImage()
-        }
-
-        let downsampleOptions = [
-            kCGImageSourceCreateThumbnailFromImageAlways: true,
-            kCGImageSourceShouldCacheImmediately: true,
-            kCGImageSourceCreateThumbnailWithTransform: true,
-            kCGImageSourceThumbnailMaxPixelSize: max(dimension.width, dimension.height)
-        ] as CFDictionary
-
-        let downsamplingImage = CGImageSourceCreateThumbnailAtIndex(source, 0, downsampleOptions)
-        return downsamplingImage
-    }
-
-    public func downsampleImage(withMaxMemory memory: Double) throws -> CGImage? {
-        guard memory > 0 else {
-            let error = NSError(
-                domain: "",
-                code: 1_000,
-                userInfo: [NSLocalizedDescriptionKey: "Memory size must be positive number"]
-            )
-            throw error
-        }
-
-        guard source != nil, let initialSize = getImageDimension() else {
-            return nil
-        }
-
-        let ratio = initialSize.width / initialSize.height
-
-        let newHeight = floor(sqrt(memory / Self.bytesPerPixel / ratio))
-        let newWidth = floor(ratio * newHeight)
-
-        return try downsampleImage(to: CGSize(width: newWidth, height: newHeight))
-    }
-
-    public func downsampleImage(scaledWith scale: Double) throws -> CGImage? {
-        guard scale > 0 else {
-            let error = NSError(
-                domain: "",
-                code: 1_000,
-                userInfo: [NSLocalizedDescriptionKey: "Scale must be positive number"]
-            )
-            throw error
-        }
-
-        guard source != nil, let initialSize = getImageDimension() else {
-            return nil
-        }
-
-        let normalizedScale = min(scale, 1.0)
-
-        let newWidth = floor(initialSize.width * normalizedScale)
-        let newHeight = floor(initialSize.height * normalizedScale)
-
-        return try downsampleImage(to: CGSize(width: newWidth, height: newHeight))
     }
 }
 
