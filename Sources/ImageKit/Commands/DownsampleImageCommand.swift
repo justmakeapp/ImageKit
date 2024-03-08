@@ -19,7 +19,7 @@ public final class DownsampleImageCommand: ImageCommand {
     public func execute() async -> Bool {
         let processor = ImageProcessor(image: context.image)
         guard
-            let initialSize = processor.getImageDimension(),
+            let initialSize = processor.resolution(),
             let initialMemorySize = processor.getDecodedImageMemorySize()
         else {
             return false

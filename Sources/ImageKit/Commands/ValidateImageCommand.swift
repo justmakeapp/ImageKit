@@ -37,7 +37,7 @@ public final class ValidateImageCommand: ImageCommand {
 
         checkMemorySize: do {
             if let maxMemorySize = context.maxMemorySize {
-                guard let imageSize = processor.getImageDimension(),
+                guard let imageSize = processor.resolution(),
                       let memorySize = processor.getDecodedImageMemorySize() else {
                     validationError = .readImageError
                     return false

@@ -4,7 +4,7 @@ import Foundation
 import ImageIO
 
 public protocol SynchronousImageProcessing {
-    func getImageDimension() -> CGSize?
+    func resolution() -> CGSize?
     func getImageFileSize() -> Double?
     func getDecodedImageMemorySize() -> Double?
     func downsampleImage(to dimension: CGSize) throws -> CGImage?
@@ -38,39 +38,61 @@ public final class ImageProcessor: SynchronousImageProcessing {
         self.source = imageSource
     }
 
-    public func getImageDimension() -> CGSize? {
+    public func resolution() -> CGSize? {
         guard let source else {
             return nil
         }
-        let properties = CGImageSourceCopyProperties(source, nil) as? [String: Any]
-        let firstIndexProperties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [String: Any]
+//        let properties = CGImageSourceCopyProperties(source, nil) as? [String: Any]
 
-        let width: CGFloat? = {
-            let propertyKey = kCGImagePropertyPixelWidth as String
-            if let properties, let width = properties[propertyKey] {
-                return width as? CGFloat
-            }
-            if let firstIndexProperties, let width = firstIndexProperties[propertyKey] {
-                return width as? CGFloat
-            }
-            return nil
-        }()
-
-        let height: CGFloat? = {
-            let propertyKey = kCGImagePropertyPixelHeight as String
-            if let properties, let height = properties[propertyKey] {
-                return height as? CGFloat
-            }
-            if let firstIndexProperties, let height = firstIndexProperties[propertyKey] {
-                return height as? CGFloat
-            }
-            return nil
-        }()
-
-        guard let width, let height else {
+        /// lấy image đầu tiền, vì JPEG có thể embed cả thumbnail vào
+        guard let firstIndexProperties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [String: Any] else {
             return nil
         }
-        return CGSize(width: width, height: height)
+
+        let width: Int = {
+            var result: Int?
+            let propertyKey = kCGImagePropertyPixelWidth as String
+//            if let properties, let width = properties[propertyKey] {
+//                return width as? CGFloat
+//            }
+            if let width = firstIndexProperties[propertyKey] {
+                result = width as? Int
+            }
+            return result ?? 0
+        }()
+
+        let height: Int = {
+            var result: Int?
+
+            let propertyKey = kCGImagePropertyPixelHeight as String
+//            if let properties, let height = properties[propertyKey] {
+//                return height as? CGFloat
+//            }
+            if let height = firstIndexProperties[propertyKey] {
+                result = height as? Int
+            }
+
+            return result ?? 0
+        }()
+
+        let orientationKey = kCGImagePropertyOrientation as String
+        let orientation = (firstIndexProperties[orientationKey] as? Int) ??
+            1 // Default to 1 if orientation is not specified
+
+        var newWidth = width
+        var newHeight = height
+        switch orientation {
+        case 1, 2, 3, 4:
+            break
+        case 5, 6, 7, 8:
+            // Rotated orientations (5 and 7 are mirrored and rotated, 6 and 8 are rotated 90° or 270°)
+            newWidth = height
+            newHeight = width
+        default:
+            break
+        }
+
+        return CGSize(width: newWidth, height: newHeight)
     }
 
     public func getImageFileSize() -> Double? {
@@ -82,7 +104,7 @@ public final class ImageProcessor: SynchronousImageProcessing {
     }
 
     public func getDecodedImageMemorySize() -> Double? {
-        guard let dimension = getImageDimension() else {
+        guard let dimension = resolution() else {
             return nil
         }
         return Self.bytesPerPixel * dimension.width * dimension.height

@@ -18,7 +18,7 @@ public extension ImageProcessor {
             )
             throw error
         }
-        guard let source, let initialSize = getImageDimension() else {
+        guard let source, let initialSize = resolution() else {
             return nil
         }
 
@@ -63,7 +63,7 @@ public extension ImageProcessor {
             throw error
         }
 
-        guard source != nil, let initialSize = getImageDimension() else {
+        guard source != nil, let initialSize = resolution() else {
             return nil
         }
 
@@ -85,7 +85,7 @@ public extension ImageProcessor {
             throw error
         }
 
-        guard source != nil, let initialSize = getImageDimension() else {
+        guard source != nil, let initialSize = resolution() else {
             return nil
         }
 
