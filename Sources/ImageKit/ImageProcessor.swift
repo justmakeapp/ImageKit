@@ -40,14 +40,6 @@ public final class ImageProcessor: SynchronousImageProcessing {
         }
     }
 
-    public var tiffDictionary: [String: Any]? {
-        properties?[kCGImagePropertyTIFFDictionary as String] as? [String: Any]
-    }
-
-    public var exifDictionary: [String: Any]? {
-        properties?[kCGImagePropertyExifDictionary as String] as? [String: Any]
-    }
-
     public init(image: ImageSource) {
         self.image = image
         initializeImageSource()
