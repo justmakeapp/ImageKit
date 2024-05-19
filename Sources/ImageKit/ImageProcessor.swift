@@ -61,10 +61,6 @@ public final class ImageProcessor: SynchronousImageProcessing {
     }
 
     public func resolution() -> CGSize? {
-        guard let source else {
-            return nil
-        }
-
         let width: Int = {
             var result: Int?
             let propertyKey = kCGImagePropertyPixelWidth as String
