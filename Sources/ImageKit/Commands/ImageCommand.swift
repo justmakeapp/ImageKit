@@ -8,6 +8,5 @@
 import Foundation
 
 public protocol ImageCommand {
-    func execute() async -> Bool
     func cancel()
 }

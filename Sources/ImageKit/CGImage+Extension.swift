@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  CGImage+Extension.swift
 //
 //
 //  Created by Bình Nguyễn Thanh on 02/10/2022.

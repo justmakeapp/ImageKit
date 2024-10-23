@@ -146,7 +146,7 @@ public final class ImageProcessor: SynchronousImageProcessing {
 }
 
 public extension ImageProcessor {
-    enum ImageSource {
+    enum ImageSource: Sendable {
         case data(_ imageData: Data)
         case url(_ url: URL)
     }

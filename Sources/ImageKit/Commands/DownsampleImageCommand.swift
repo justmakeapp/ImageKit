@@ -1,5 +1,5 @@
 //
-//  DownsamplingImageCommand.swift
+//  DownsampleImageCommand.swift
 //  Loop
 //
 //  Created by Bình Nguyễn Thanh on 02/10/2022.
@@ -8,21 +8,20 @@
 import Foundation
 import ImageIO
 
-public final class DownsampleImageCommand: ImageCommand {
+public final class DownsampleImageCommand: ImageCommand, Sendable {
     let context: Context
-    public private(set) var result: Data?
 
     public init(context: Context) {
         self.context = context
     }
 
-    public func execute() async -> Bool {
+    public func execute() async -> Data? {
         let processor = ImageProcessor(image: context.image)
         guard
             let initialSize = processor.resolution(),
             let initialMemorySize = processor.getDecodedImageMemorySize()
         else {
-            return false
+            return nil
         }
 
         let scale: Double = {
@@ -41,22 +40,21 @@ public final class DownsampleImageCommand: ImageCommand {
         }()
 
         guard let newImage = try? processor.downsampleImage(scaledWith: scale) else {
-            return false
+            return nil
         }
 
         guard let data = newImage.jpegData(compressionQuality: min(1.0, context.compressionQuality)) else {
-            return false
+            return nil
         }
 
-        result = data
-        return true
+        return data
     }
 
     public func cancel() {}
 }
 
 public extension DownsampleImageCommand {
-    struct Context {
+    struct Context: Sendable {
         let image: ImageProcessor.ImageSource
         let maxMemorySize: FileSize?
         let maxDimensionSize: CGSize?
