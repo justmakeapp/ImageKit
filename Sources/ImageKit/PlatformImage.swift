@@ -4,7 +4,7 @@
     public typealias PlatformImage = UIImage
 #endif
 
-#if canImport(AppKit)
+#if canImport(AppKit) && !targetEnvironment(macCatalyst)
     import AppKit
 
     public typealias PlatformImage = NSImage
