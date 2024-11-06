@@ -41,7 +41,7 @@ public struct ImageErrorView: View {
         #if !os(watchOS)
             .background(
                 .ultraThinMaterial,
-                in: RoundedRectangle(cornerRadius: 8, style: .continuous)
+                in: .rect
             )
         #endif
     }
