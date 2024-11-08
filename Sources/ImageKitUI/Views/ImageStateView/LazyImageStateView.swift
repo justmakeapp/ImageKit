@@ -19,7 +19,7 @@ public struct LazyImageStateView<ImageView: View, ErrorView: View, PlaceholderVi
         _ state: LazyImageState,
         @ViewBuilder imageViewBuilder: @escaping (Image) -> ImageView = { $0.resizable().scaledToFill() },
         @ViewBuilder errorViewBuilder: @escaping () -> ErrorView = { ImageErrorView() },
-        @ViewBuilder placeholderViewBuilder: @escaping () -> PlaceholderView = { ProgressView() }
+        @ViewBuilder placeholderViewBuilder: @escaping () -> PlaceholderView = { ImagePlaceholderView() }
     ) {
         self.state = state
         self.imageViewBuilder = imageViewBuilder
