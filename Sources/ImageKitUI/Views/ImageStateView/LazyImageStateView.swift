@@ -37,14 +37,12 @@ public struct LazyImageStateView<ImageView: View, ErrorView: View, PlaceholderVi
             switch result {
             case .success:
                 if let image = state.image {
-                    image
-                        .resizable()
-                        .scaledToFill()
+                    imageViewBuilder(image)
                 } else {
                     Text("Unknown state")
                 }
             case .failure:
-                ImageErrorView()
+                errorViewBuilder()
             }
         } else {
             if state.isLoading {
