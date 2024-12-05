@@ -47,8 +47,6 @@ public struct LazyImageStateView<ImageView: View, ErrorView: View, PlaceholderVi
         } else {
             if state.isLoading {
                 placeholderViewBuilder()
-            } else {
-                Text("Unknown state")
             }
         }
     }
