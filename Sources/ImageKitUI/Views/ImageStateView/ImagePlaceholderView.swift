@@ -55,7 +55,7 @@ public struct ImagePlaceholderView: View {
 public extension ImagePlaceholderView {
     struct Config {
         var symbolEffectEnabled: Bool = true
-        var maxSize: CGSize = .init(width: 72, height: 72)
+        var maxSize: CGSize = .init(width: 72.scaledToMac(), height: 72.scaledToMac())
         var cornerRadius: CGFloat = 8
         var useBackground: Bool = true
     }
@@ -68,8 +68,12 @@ public extension ImagePlaceholderView {
         transform { $0.config.cornerRadius = value }
     }
 
-    func symbolEffectEnabled(_ enabled: Bool = true) -> ImagePlaceholderView {
+    func symbolEffectEnabled(_ enabled: Bool = true) -> Self {
         transform { $0.config.symbolEffectEnabled = enabled }
+    }
+
+    func maxSize(_ size: CGSize) -> Self {
+        transform { $0.config.maxSize = size }
     }
 }
 

@@ -64,7 +64,7 @@ public struct ImageErrorView: View {
 
 public extension ImageErrorView {
     struct Config {
-        var maxSize: CGSize = .init(width: 72, height: 72)
+        var maxSize: CGSize = .init(width: 72.scaledToMac(), height: 72.scaledToMac())
         var cornerRadius: CGFloat = 8
         var useBackground: Bool = true
     }
