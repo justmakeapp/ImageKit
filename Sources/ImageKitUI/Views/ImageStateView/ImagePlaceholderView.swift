@@ -17,23 +17,7 @@ public struct ImagePlaceholderView: View {
             .fill(Color.clear)
             .frame(maxWidth: config.maxSize.width, maxHeight: config.maxSize.height)
             .overlay {
-                Image(systemName: "photo")
-                    .resizable()
-                    .scaledToFit()
-                    .font(.largeTitle)
-                    .imageScale(.large)
-                    .foregroundStyle(.tertiary)
-                    .modifier {
-                        if #available(iOS 17.0, macOS 14.0, *) {
-                            if config.symbolEffectEnabled {
-                                $0.symbolEffect(.pulse)
-                            } else {
-                                $0
-                            }
-                        } else {
-                            $0
-                        }
-                    }
+                imageView
             }
             .modifier { content in
                 if config.useBackground {
@@ -50,6 +34,33 @@ public struct ImagePlaceholderView: View {
                 }
             }
     }
+
+    private var imageView: some View {
+        Image(systemName: "photo")
+            .modifier { content in
+                if config.resizable {
+                    content
+                        .resizable()
+                        .scaledToFit()
+                } else {
+                    content
+                        .font(config.font)
+                        .imageScale(config.imageScale)
+                }
+            }
+            .foregroundStyle(.tertiary)
+            .modifier {
+                if #available(iOS 17.0, macOS 14.0, *) {
+                    if config.symbolEffectEnabled {
+                        $0.symbolEffect(.pulse)
+                    } else {
+                        $0
+                    }
+                } else {
+                    $0
+                }
+            }
+    }
 }
 
 public extension ImagePlaceholderView {
@@ -58,6 +69,9 @@ public extension ImagePlaceholderView {
         var maxSize: CGSize = .init(width: 72.scaledToMac(), height: 72.scaledToMac())
         var cornerRadius: CGFloat = 8
         var useBackground: Bool = true
+        var resizable: Bool = true
+        var font: Font = .largeTitle
+        var imageScale: Image.Scale = .large
     }
 
     func useBackground(_ value: Bool) -> Self {
@@ -74,6 +88,10 @@ public extension ImagePlaceholderView {
 
     func maxSize(_ size: CGSize) -> Self {
         transform { $0.config.maxSize = size }
+    }
+
+    func resizable(_ value: Bool) -> Self {
+        transform { $0.config.resizable = value }
     }
 }
 

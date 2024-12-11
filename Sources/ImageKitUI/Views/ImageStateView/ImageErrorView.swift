@@ -21,29 +21,7 @@ public struct ImageErrorView: View {
             .fill(Color.clear)
             .frame(maxWidth: config.maxSize.width, maxHeight: config.maxSize.height)
             .overlay {
-                Group {
-                    if #available(iOS 18.0, macOS 15.0, *) {
-                        Image(systemName: "photo.badge.exclamationmark")
-                            .resizable()
-                            .scaledToFit()
-                    } else {
-                        Image("custom.photo.error", bundle: .module)
-                            .resizable()
-                            .scaledToFit()
-                    }
-                }
-                .font(.largeTitle)
-                .imageScale(.large)
-                .foregroundStyle(.tertiary)
-                .modifier {
-                    if #available(iOS 18.0, macOS 15.0, *) {
-                        $0.symbolEffect(.bounce.up.byLayer, options: .nonRepeating)
-                    } else if #available(iOS 17.0, macOS 14.0, *) {
-                        $0.symbolEffect(.pulse, options: .nonRepeating)
-                    } else {
-                        $0
-                    }
-                }
+                imageView
             }
             .modifier { content in
                 if config.useBackground {
@@ -60,6 +38,40 @@ public struct ImageErrorView: View {
                 }
             }
     }
+
+    private var imageView: some View {
+        image
+            .modifier { content in
+                if config.resizable {
+                    content
+                        .resizable()
+                        .scaledToFit()
+                } else {
+                    content
+                        .font(config.font)
+                        .imageScale(config.imageScale)
+                }
+            }
+            .foregroundStyle(.tertiary)
+            .modifier { content in
+                if #available(iOS 18.0, macOS 15.0, *) {
+                    content.symbolEffect(.bounce.up.byLayer, options: .nonRepeating)
+                } else if #available(iOS 17.0, macOS 14.0, *) {
+                    content.symbolEffect(.pulse, options: .nonRepeating)
+                } else {
+                    content
+                }
+            }
+    }
+
+    private var image: Image {
+        if #available(iOS 18.0, macOS 15.0, *) {
+            Image(systemName: "photo.badge.exclamationmark")
+        } else {
+            Image("custom.photo.error", bundle: .module)
+//            Image(systemName: "photo")
+        }
+    }
 }
 
 public extension ImageErrorView {
@@ -67,6 +79,9 @@ public extension ImageErrorView {
         var maxSize: CGSize = .init(width: 72.scaledToMac(), height: 72.scaledToMac())
         var cornerRadius: CGFloat = 8
         var useBackground: Bool = true
+        var resizable: Bool = true
+        var font: Font = .largeTitle
+        var imageScale: Image.Scale = .large
     }
 
     func useBackground(_ value: Bool) -> Self {
@@ -75,6 +90,14 @@ public extension ImageErrorView {
 
     func cornerRadius(_ value: CGFloat) -> Self {
         transform { $0.config.cornerRadius = value }
+    }
+
+    func maxSize(_ value: CGSize) -> Self {
+        transform { $0.config.maxSize = value }
+    }
+
+    func resizable(_ value: Bool) -> Self {
+        transform { $0.config.resizable = value }
     }
 }
 

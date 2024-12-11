@@ -18,8 +18,16 @@ public struct LazyImageStateView<ImageView: View, ErrorView: View, PlaceholderVi
     public init(
         _ state: LazyImageState,
         @ViewBuilder imageViewBuilder: @escaping (Image) -> ImageView = { $0.resizable().scaledToFill() },
-        @ViewBuilder errorViewBuilder: @escaping () -> ErrorView = { ImageErrorView() },
-        @ViewBuilder placeholderViewBuilder: @escaping () -> PlaceholderView = { ImagePlaceholderView() }
+        @ViewBuilder errorViewBuilder: @escaping () -> ErrorView = {
+            ImageErrorView()
+                .maxSize(CGSize(width: CGFloat.infinity, height: CGFloat.infinity))
+                .resizable(false)
+        },
+        @ViewBuilder placeholderViewBuilder: @escaping () -> PlaceholderView = {
+            ImagePlaceholderView()
+                .maxSize(CGSize(width: CGFloat.infinity, height: CGFloat.infinity))
+                .resizable(false)
+        }
     ) {
         self.state = state
         self.imageViewBuilder = imageViewBuilder
