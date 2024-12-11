@@ -59,3 +59,24 @@ public struct LazyImageStateView<ImageView: View, ErrorView: View, PlaceholderVi
         }
     }
 }
+
+#Preview {
+    let imageUrl =
+        URL(string: "https://c4.wallpaperflare.com/wallpaper/217/501/151/light-lamp-latern-hd-wallpaper-preview.jpg")
+
+    LazyImage(request: ImageRequest(
+        url: imageUrl,
+        processors: [
+            //                    ImageProcessors.Resize(width: config.imageSize.width)
+        ],
+        userInfo: [:
+            //                    ImageRequest.UserInfoKey.thumbnailKey: ImageRequest.ThumbnailOptions(
+            //                        size: .init(width: config.imageSize.width, height: config.imageSize.height),
+            //                        unit: .points
+            //                    )
+        ]
+    )) { state in
+        LazyImageStateView(state)
+    }
+    .frame(width: 200, height: 200)
+}
