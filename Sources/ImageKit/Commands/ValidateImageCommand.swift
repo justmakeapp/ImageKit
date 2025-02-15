@@ -11,26 +11,23 @@ public final class ValidateImageCommand: ImageCommand {
     private static let bytesPerPixel = 4
 
     let context: Context
-    private(set) var validationError: ErrorType?
 
     public init(context: Context) {
         self.context = context
     }
 
-    public func execute() async -> Bool {
+    public func execute() throws {
         let processor = ImageProcessor(image: context.image)
         let fileSize = processor.getImageFileSize()
 
         checkImageFileSize: do {
             if let maxFileSize = context.maxFileSize {
                 guard let fileSize else {
-                    validationError = .readImageError
-                    return false
+                    throw ErrorType.readImageError
                 }
 
                 if fileSize > maxFileSize {
-                    validationError = .fileSizeTooBig
-                    return false
+                    throw ErrorType.fileSizeTooBig
                 }
             }
         }
@@ -39,23 +36,18 @@ public final class ValidateImageCommand: ImageCommand {
             if let maxMemorySize = context.maxMemorySize {
                 guard let imageSize = processor.resolution(),
                       let memorySize = processor.getDecodedImageMemorySize() else {
-                    validationError = .readImageError
-                    return false
+                    throw ErrorType.readImageError
                 }
 
                 if memorySize > maxMemorySize {
                     let scale = sqrt(maxMemorySize / memorySize)
-                    validationError =
-                        .memorySizeTooBig(maxImageDimension: CGSize(
-                            width: imageSize.width * scale,
-                            height: imageSize.height * scale
-                        ))
-                    return false
+                    throw ErrorType.memorySizeTooBig(maxImageDimension: CGSize(
+                        width: imageSize.width * scale,
+                        height: imageSize.height * scale
+                    ))
                 }
             }
         }
-
-        return true
     }
 
     public func cancel() {}
@@ -74,7 +66,7 @@ public extension ValidateImageCommand {
         }
     }
 
-    enum ErrorType {
+    enum ErrorType: Error {
         case readImageError
         case fileSizeTooBig
         case memorySizeTooBig(maxImageDimension: CGSize)
