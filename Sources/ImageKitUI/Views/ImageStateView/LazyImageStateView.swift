@@ -49,6 +49,7 @@ public struct LazyImageStateView<ImageView: View, ErrorView: View, PlaceholderVi
                 } else {
                     Text("Unknown state")
                 }
+
             case .failure:
                 errorViewBuilder()
             }

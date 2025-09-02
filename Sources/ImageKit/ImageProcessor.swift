@@ -96,10 +96,12 @@ public final class ImageProcessor: SynchronousImageProcessing {
         switch orientation {
         case 1, 2, 3, 4:
             break
+
         case 5, 6, 7, 8:
             // Rotated orientations (5 and 7 are mirrored and rotated, 6 and 8 are rotated 90° or 270°)
             newWidth = height
             newHeight = width
+
         default:
             break
         }
