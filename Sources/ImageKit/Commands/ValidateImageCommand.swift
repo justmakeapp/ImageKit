@@ -5,70 +5,76 @@
 //  Created by Bình Nguyễn Thanh on 29/09/2022.
 //
 
-import Foundation
+#if canImport(CoreImage)
+    import Foundation
 
-public final class ValidateImageCommand: ImageCommand {
-    private static let bytesPerPixel = 4
+    public final class ValidateImageCommand: ImageCommand {
+        private static let bytesPerPixel = 4
 
-    let context: Context
+        let context: Context
 
-    public init(context: Context) {
-        self.context = context
-    }
+        public init(context: Context) {
+            self.context = context
+        }
 
-    public func execute() throws {
-        let processor = ImageProcessor(image: context.image)
-        let fileSize = processor.getImageFileSize()
+        public func execute() throws {
+            let processor = ImageProcessor(image: context.image)
+            let fileSize = processor.getImageFileSize()
 
-        checkImageFileSize: do {
-            if let maxFileSize = context.maxFileSize {
-                guard let fileSize else {
-                    throw ErrorType.readImageError
+            checkImageFileSize: do {
+                if let maxFileSize = context.maxFileSize {
+                    guard let fileSize else {
+                        throw ErrorType.readImageError
+                    }
+
+                    if fileSize > maxFileSize {
+                        throw ErrorType.fileSizeTooBig
+                    }
                 }
+            }
 
-                if fileSize > maxFileSize {
-                    throw ErrorType.fileSizeTooBig
+            checkMemorySize: do {
+                if let maxMemorySize = context.maxMemorySize {
+                    guard let imageSize = processor.resolution(),
+                          let memorySize = processor.getDecodedImageMemorySize() else {
+                        throw ErrorType.readImageError
+                    }
+
+                    if memorySize > maxMemorySize {
+                        let scale = sqrt(maxMemorySize / memorySize)
+                        throw ErrorType.memorySizeTooBig(maxImageDimension: CGSize(
+                            width: imageSize.width * scale,
+                            height: imageSize.height * scale
+                        ))
+                    }
                 }
             }
         }
 
-        checkMemorySize: do {
-            if let maxMemorySize = context.maxMemorySize {
-                guard let imageSize = processor.resolution(),
-                      let memorySize = processor.getDecodedImageMemorySize() else {
-                    throw ErrorType.readImageError
-                }
+        public func cancel() {}
+    }
 
-                if memorySize > maxMemorySize {
-                    let scale = sqrt(maxMemorySize / memorySize)
-                    throw ErrorType.memorySizeTooBig(maxImageDimension: CGSize(
-                        width: imageSize.width * scale,
-                        height: imageSize.height * scale
-                    ))
-                }
+    public extension ValidateImageCommand {
+        struct Context {
+            let image: ImageProcessor.ImageSource
+            let maxFileSize: FileSize?
+            let maxMemorySize: FileSize?
+
+            public init(
+                image: ImageProcessor.ImageSource,
+                maxFileSize: FileSize? = nil,
+                maxMemorySize: FileSize? = nil
+            ) {
+                self.image = image
+                self.maxFileSize = maxFileSize
+                self.maxMemorySize = maxMemorySize
             }
         }
-    }
 
-    public func cancel() {}
-}
-
-public extension ValidateImageCommand {
-    struct Context {
-        let image: ImageProcessor.ImageSource
-        let maxFileSize: FileSize?
-        let maxMemorySize: FileSize?
-
-        public init(image: ImageProcessor.ImageSource, maxFileSize: FileSize? = nil, maxMemorySize: FileSize? = nil) {
-            self.image = image
-            self.maxFileSize = maxFileSize
-            self.maxMemorySize = maxMemorySize
+        enum ErrorType: Error {
+            case readImageError
+            case fileSizeTooBig
+            case memorySizeTooBig(maxImageDimension: CGSize)
         }
     }
-
-    enum ErrorType: Error {
-        case readImageError
-        case fileSizeTooBig
-        case memorySizeTooBig(maxImageDimension: CGSize)
-    }
-}
+#endif

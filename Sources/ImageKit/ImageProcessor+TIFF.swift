@@ -5,11 +5,13 @@
 //  Created by Long Vu on 17/3/24.
 //
 
-import Foundation
-import ImageIO
+#if canImport(CoreImage)
+    import Foundation
+    import ImageIO
 
-public extension ImageProcessor {
-    var tiffDictionary: [String: Any]? {
-        properties?[kCGImagePropertyTIFFDictionary as String] as? [String: Any]
+    public extension ImageProcessor {
+        var tiffDictionary: [String: Any]? {
+            properties?[kCGImagePropertyTIFFDictionary as String] as? [String: Any]
+        }
     }
-}
+#endif

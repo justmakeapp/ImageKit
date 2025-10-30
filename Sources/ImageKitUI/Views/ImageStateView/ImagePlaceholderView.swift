@@ -50,7 +50,7 @@ public struct ImagePlaceholderView: View {
             }
             .foregroundStyle(.tertiary)
             .modifier {
-                if #available(iOS 17.0, macOS 14.0, *) {
+                if #available(iOS 17.0, macOS 14.0, watchOS 10.0, *) {
                     if config.symbolEffectEnabled {
                         $0.symbolEffect(.pulse)
                     } else {

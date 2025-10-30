@@ -6,7 +6,8 @@ let package = Package(
     name: "ImageKit",
     platforms: [
         .iOS(.v15),
-        .macOS(.v12)
+        .macOS(.v12),
+        .watchOS(.v8)
     ],
     products: [
         .library(
@@ -19,13 +20,10 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/kean/Nuke", exact: "12.8.0"),
+        .package(url: "https://github.com/kean/Nuke", from: "12.8.0"),
     ],
     targets: [
-        .target(
-            name: "ImageKit",
-            dependencies: []
-        ),
+        .target(name: "ImageKit"),
         .target(
             name: "ImageKitUI",
             dependencies: [
@@ -36,6 +34,5 @@ let package = Package(
                 .process("Resources")
             ]
         ),
-    ],
-    swiftLanguageModes: [.v6]
+    ]
 )
