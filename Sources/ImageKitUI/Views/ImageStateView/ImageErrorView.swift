@@ -8,6 +8,8 @@
 import SwiftUI
 
 public struct ImageErrorView: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     private var config = Config()
 
     public init() {}
@@ -22,6 +24,13 @@ public struct ImageErrorView: View {
             .frame(maxWidth: config.maxSize.width, maxHeight: config.maxSize.height)
             .overlay {
                 imageView
+                    .modifier {
+                        if colorScheme == .light {
+                            $0.foregroundStyle(.tertiary)
+                        } else {
+                            $0.foregroundStyle(.gray.opacity(0.6))
+                        }
+                    }
             }
             .modifier { content in
                 if config.useBackground {
@@ -52,7 +61,6 @@ public struct ImageErrorView: View {
                         .imageScale(config.imageScale)
                 }
             }
-            .foregroundStyle(.tertiary)
             .modifier { content in
                 if #available(iOS 18.0, macOS 15.0, watchOS 11.0, *) {
                     content.symbolEffect(.bounce.up.byLayer, options: .nonRepeating)
@@ -101,23 +109,34 @@ public extension ImageErrorView {
     }
 }
 
-#Preview {
-    HStack {
-        Rectangle()
-            .fill(Color.green.opacity(0.5))
-            .frame(width: 72, height: 72)
-            .overlay {
-                ImageErrorView()
-            }
+#if DEBUG
+    #Preview {
+        HStack {
+            Rectangle()
+                .fill(Color.green.opacity(0.5))
+                .frame(width: 72, height: 72)
+                .overlay {
+                    ImageErrorView()
+                }
 
-        Spacer()
+            Spacer()
 
-        Rectangle()
-            .fill(Color.green.opacity(0.5))
-            .frame(width: 16, height: 16)
-            .overlay {
-                ImageErrorView()
-            }
+            Rectangle()
+                .fill(Color.green.opacity(0.5))
+                .frame(width: 16, height: 16)
+                .overlay {
+                    ImageErrorView()
+                }
+
+            Rectangle()
+                .fill(Color(red: 255 / 255, green: 246 / 255, blue: 199 / 255))
+                .frame(width: 200, height: 100)
+                .overlay {
+                    ImageErrorView()
+                        .useBackground(false)
+                }
+                .colorScheme(.dark)
+        }
+        .padding(50)
     }
-    .padding(50)
-}
+#endif

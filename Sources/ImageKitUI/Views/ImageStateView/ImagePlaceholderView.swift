@@ -8,6 +8,8 @@
 import SwiftUI
 
 public struct ImagePlaceholderView: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     private var config = Config()
 
     public init() {}
@@ -18,6 +20,13 @@ public struct ImagePlaceholderView: View {
             .frame(maxWidth: config.maxSize.width, maxHeight: config.maxSize.height)
             .overlay {
                 imageView
+                    .modifier {
+                        if colorScheme == .light {
+                            $0.foregroundStyle(.tertiary)
+                        } else {
+                            $0.foregroundStyle(.gray.opacity(0.6))
+                        }
+                    }
             }
             .modifier { content in
                 if config.useBackground {
@@ -48,7 +57,6 @@ public struct ImagePlaceholderView: View {
                         .imageScale(config.imageScale)
                 }
             }
-            .foregroundStyle(.tertiary)
             .modifier {
                 if #available(iOS 17.0, macOS 14.0, watchOS 10.0, *) {
                     if config.symbolEffectEnabled {
@@ -95,9 +103,24 @@ public extension ImagePlaceholderView {
     }
 }
 
-#Preview {
-    ZStack {
-        ImagePlaceholderView()
+#if DEBUG
+    #Preview {
+        VStack {
+            ImagePlaceholderView()
+
+            ImagePlaceholderView()
+                .useBackground(false)
+                .colorScheme(.dark)
+
+            Rectangle()
+                .fill(Color(red: 255 / 255, green: 246 / 255, blue: 199 / 255))
+                .frame(width: 200, height: 100)
+                .overlay {
+                    ImagePlaceholderView()
+                        .useBackground(false)
+                }
+                .colorScheme(.dark)
+        }
+        .padding()
     }
-    .padding()
-}
+#endif
