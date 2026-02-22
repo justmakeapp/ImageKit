@@ -39,13 +39,13 @@
                 return nil
             }
 
-            /// Convert latitude and longitude according to their reference (N/S, E/W)
-            /// The conversion of latitude and longitude according to their references (N/S for latitude and E/W for
-            /// longitude)
-            /// is crucial in accurately interpreting GPS coordinates because the raw numbers extracted from
-            /// the metadata don't inherently indicate whether they are north or south of the equator, or east or west
-            /// of
-            /// the Prime Meridian.
+            // Convert latitude and longitude according to their reference (N/S, E/W)
+            // The conversion of latitude and longitude according to their references (N/S for latitude and E/W for
+            // longitude)
+            // is crucial in accurately interpreting GPS coordinates because the raw numbers extracted from
+            // the metadata don't inherently indicate whether they are north or south of the equator, or east or west
+            // of
+            // the Prime Meridian.
             let latMultiplier = (latitudeRef == "N") ? 1.0 : -1.0
             let lonMultiplier = (longitudeRef == "E") ? 1.0 : -1.0
 

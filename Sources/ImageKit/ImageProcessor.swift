@@ -27,7 +27,7 @@
                 } else {
                     guard
                         let source,
-                        /// lấy image đầu tiền, vì JPEG có thể embed cả thumbnail vào
+                        // lấy image đầu tiền, vì JPEG có thể embed cả thumbnail vào
                         let firstIndexProperties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [String: Any]
                     else {
                         return nil
