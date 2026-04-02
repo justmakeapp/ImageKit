@@ -118,8 +118,7 @@
             // Calculate megapixels
             if let pixelWidth = properties?[kCGImagePropertyPixelWidth as String] as? CGFloat,
                let pixelHeight = properties?[kCGImagePropertyPixelHeight as String] as? CGFloat {
-                let megapixels = (pixelWidth * dpiWidth / 72.0) * (pixelHeight * dpiHeight / 72.0) / 1_000_000.0
-                return megapixels
+                return (pixelWidth * dpiWidth / 72.0) * (pixelHeight * dpiHeight / 72.0) / 1_000_000.0
             } else {
                 return nil
             }

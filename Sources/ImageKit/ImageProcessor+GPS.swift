@@ -49,12 +49,10 @@
             let latMultiplier = (latitudeRef == "N") ? 1.0 : -1.0
             let lonMultiplier = (longitudeRef == "E") ? 1.0 : -1.0
 
-            let location = CLLocation(
+            return CLLocation(
                 latitude: latitude * latMultiplier,
                 longitude: longitude * lonMultiplier
             )
-
-            return location
         }
     }
 #endif

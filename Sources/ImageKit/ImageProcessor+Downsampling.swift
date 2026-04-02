@@ -54,8 +54,7 @@
                 kCGImageSourceThumbnailMaxPixelSize: max(dimension.width, dimension.height)
             ] as CFDictionary
 
-            let downsamplingImage = CGImageSourceCreateThumbnailAtIndex(source, 0, downsampleOptions)
-            return downsamplingImage
+            return CGImageSourceCreateThumbnailAtIndex(source, 0, downsampleOptions)
         }
 
         func downsampleImage(withMaxMemory memory: Double) throws -> CGImage? {
