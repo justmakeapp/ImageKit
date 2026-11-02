@@ -20,7 +20,7 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/kean/Nuke", from: "12.8.0"),
+        .package(url: "https://github.com/kean/Nuke", from: "13.2.0"),
     ],
     targets: [
         .target(name: "ImageKit"),
