@@ -9,7 +9,9 @@ import NukeUI
 import SwiftUI
 
 public struct LazyImageStateView<ImageView: View, ErrorView: View, PlaceholderView: View>: View {
-    let state: LazyImageState
+    /// A copy of the state, not the state itself: Nuke's state is one object that stays the same while it loads, so
+    /// SwiftUI could see no change, skip redrawing this view, and keep showing nothing after the image arrived.
+    private let phase: Phase
 
     let imageViewBuilder: (Image) -> ImageView
     let errorViewBuilder: () -> ErrorView
@@ -29,7 +31,7 @@ public struct LazyImageStateView<ImageView: View, ErrorView: View, PlaceholderVi
                 .resizable(false)
         }
     ) {
-        self.state = state
+        self.phase = Phase(state)
         self.imageViewBuilder = imageViewBuilder
         self.errorViewBuilder = errorViewBuilder
         self.placeholderViewBuilder = placeholderViewBuilder
@@ -41,21 +43,42 @@ public struct LazyImageStateView<ImageView: View, ErrorView: View, PlaceholderVi
 
     @ViewBuilder
     private var contentView: some View {
-        if let result = state.result {
-            switch result {
-            case .success:
-                if let image = state.image {
-                    imageViewBuilder(image)
-                } else {
-                    Text("Unknown state")
-                }
-
-            case .failure:
-                errorViewBuilder()
+        switch phase {
+        case let .success(image):
+            if let image {
+                imageViewBuilder(image)
+            } else {
+                Text("Unknown state")
             }
-        } else {
-            if state.isLoading {
-                placeholderViewBuilder()
+
+        case .failure:
+            errorViewBuilder()
+
+        case .loading:
+            placeholderViewBuilder()
+
+        case .idle:
+            EmptyView()
+        }
+    }
+}
+
+private extension LazyImageStateView {
+    enum Phase {
+        case idle
+        case loading
+        case success(Image?)
+        case failure
+
+        @MainActor
+        init(_ state: LazyImageState) {
+            switch state.result {
+            case .success:
+                self = .success(state.image)
+            case .failure:
+                self = .failure
+            case nil:
+                self = state.isLoading ? .loading : .idle
             }
         }
     }
